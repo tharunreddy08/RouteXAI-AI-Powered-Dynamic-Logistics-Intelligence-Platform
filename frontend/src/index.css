@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply bg-base-950;
+  }
+  body {
+    @apply bg-base-950 text-ink font-body antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
+  ::selection {
+    background: rgba(62, 230, 196, 0.25);
+  }
+  * {
+    scrollbar-color: #26304a #0f1520;
+    scrollbar-width: thin;
+  }
+  :focus-visible {
+    outline: 2px solid #3ee6c4;
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .panel {
+    @apply bg-panel border border-panelBorder rounded-xl shadow-panel;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+  .input {
+    @apply w-full bg-base-800 border border-panelBorder rounded-lg px-3 py-2 text-sm text-ink outline-none focus:border-signal/60 transition-colors;
+  }
+}
