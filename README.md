@@ -1,88 +1,336 @@
 # RouteXAI
 
-AI-Powered Dynamic Logistics Intelligence Platform — a last-mile route
-optimization and fleet intelligence platform combining OR-Tools VRPTW,
-K-Means clustering, A* rerouting, an ML ETA model with a self-learning
-feedback loop, and hardware-triggered dynamic rerouting.
+## AI-Powered Dynamic Logistics Intelligence Platform
 
-This build is organized into phases; **Phases 1-5 are complete and verified
-working** (not mocked — every claim below was actually run and checked).
-See `backend/README.md` and `frontend/README.md` for full detail on each.
+**RouteXAI** is an AI-powered last-mile logistics intelligence platform designed to optimize delivery routes, improve ETA accuracy, enhance fleet visibility, and enable intelligent real-time route adaptation.
 
-| Phase | Scope | Status |
-|---|---|---|
-| 1 | Backend foundation: DB, JWT auth, roles, seed data | ✅ |
-| 2 | Orders (manual/CSV/JSON), vehicle CRUD, OR-Tools VRPTW + K-Means + A* | ✅ |
-| 3 | XGBoost ETA prediction + self-learning retraining feedback loop | ✅ |
-| 4 | Hardware BLOCK_DETECTED/CLEARED — single-vehicle A* rerouting | ✅ |
-| 5 | React + Vite + TypeScript + Tailwind + Leaflet frontend | ✅ |
-| 6 | Analytics (Daily/Weekly/Monthly/Yearly), ML Insights panel, report export | ✅ |
+The platform combines **Google OR-Tools VRPTW, K-Means clustering, A* pathfinding, XGBoost-based ETA prediction, self-learning ML feedback, and hardware-triggered dynamic rerouting** into a unified logistics optimization system.
 
-All six phases from the original spec are now functionally complete and
-verified. Remaining items are polish, not missing features: the order
-status 15-minute auto-sync job, a Settings page, and full Docker Compose
-end-to-end verification (each service was verified individually, not yet
-run together via `docker compose up`).
+---
 
-## Quick start (local, no Docker)
+## Key Features
+
+### 🚚 Intelligent Route Optimization
+
+* Vehicle Routing Problem with Time Windows (**VRPTW**) using Google OR-Tools
+* K-Means-based delivery clustering
+* A*-based shortest-path routing
+* Dynamic route recalculation
+* Vehicle and delivery constraints
+* Hardware-triggered route adaptation
+
+### 🤖 AI & Machine Learning
+
+* XGBoost-based ETA prediction
+* Predicted-vs-actual ETA analysis
+* ML feedback collection
+* Self-learning model retraining pipeline
+* ML-powered operational insights
+
+### 📦 Order & Fleet Management
+
+* Manual order creation and management
+* CSV and JSON order import
+* Order CRUD operations
+* Vehicle CRUD operations
+* Role-based access control
+* Delivery rider management and assignment
+
+### 📊 Analytics & Reporting
+
+* Daily analytics
+* Weekly analytics
+* Monthly analytics
+* Yearly analytics
+* Operational performance insights
+* ML Insights dashboard
+* Predicted-vs-actual ETA analysis
+* Report export functionality
+
+### 🔄 Dynamic Rerouting
+
+RouteXAI supports hardware-generated events such as:
+
+* `BLOCK_DETECTED`
+* `BLOCK_CLEARED`
+
+When a road blockage is detected, the system can dynamically recalculate the affected vehicle's route using **A* pathfinding**.
+
+---
+
+# System Architecture
+
+```text
+                    ┌─────────────────────────┐
+                    │      React Frontend     │
+                    │ Vite + TypeScript       │
+                    │ Tailwind + Leaflet      │
+                    └────────────┬────────────┘
+                                 │
+                              REST API
+                                 │
+                    ┌────────────▼────────────┐
+                    │      FastAPI Backend    │
+                    │ Authentication & RBAC   │
+                    │ Business Logic           │
+                    └────────────┬────────────┘
+                                 │
+          ┌──────────────────────┼──────────────────────┐
+          │                      │                      │
+          ▼                      ▼                      ▼
+ ┌─────────────────┐   ┌──────────────────┐   ┌─────────────────┐
+ │ Route Optimizer │   │ ML ETA Engine    │   │ Dynamic Routing │
+ │ OR-Tools VRPTW  │   │ XGBoost          │   │ A*              │
+ │ K-Means         │   │ Feedback Loop    │   │ Event Handling  │
+ └─────────────────┘   └──────────────────┘   └─────────────────┘
+                                 │
+                         ┌───────▼────────┐
+                         │   PostgreSQL   │
+                         │    Database    │
+                         └────────────────┘
+```
+
+---
+
+# Technology Stack
+
+### Frontend
+
+* React.js
+* Vite
+* TypeScript
+* Tailwind CSS
+* React Router
+* Axios
+* React Leaflet
+* Leaflet
+
+### Backend
+
+* Python
+* FastAPI
+* SQLAlchemy
+* Pydantic
+* Uvicorn
+* JWT Authentication
+
+### Database
+
+* PostgreSQL
+
+### AI & Optimization
+
+* Google OR-Tools
+* K-Means Clustering
+* A* Pathfinding
+* XGBoost
+* Scikit-learn
+
+### DevOps
+
+* Docker
+* Docker Compose
+
+---
+
+# Quick Start
+
+## Backend
 
 ```bash
-# Backend
 cd backend
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-python -m seed.seed_data
-uvicorn app.main:app --reload --port 8000
 
-# Frontend (separate terminal)
-cd frontend
-npm install
+python3 -m venv .venv
+source .venv/bin/activate
+
+pip install -r requirements.txt
+
 cp .env.example .env
+
+python -m seed.seed_data
+
+uvicorn app.main:app --reload --port 8000
+```
+
+Backend API documentation:
+
+```text
+http://localhost:8000/docs
+```
+
+## Frontend
+
+Open a separate terminal:
+
+```bash
+cd frontend
+
+npm install
+
+cp .env.example .env
+
 npm run dev
 ```
 
-Open http://localhost:5173 and log in with:
+Frontend:
 
-| Role | Email | Password |
-|---|---|---|
-| Admin | admin@routexai.com | Admin@123 |
-| Dispatcher | dispatcher@routexai.com | Dispatch@123 |
-| Rider | rider1@routexai.com | Rider@123 |
+```text
+http://localhost:5173
+```
 
-## Quick start (Docker)
+---
+
+# Docker Deployment
+
+RouteXAI includes Docker Compose support for running the application stack together.
 
 ```bash
 docker compose up --build
 ```
 
-Frontend on http://localhost:3000, backend/Swagger on http://localhost:8000/docs.
+Services:
 
-## What's genuinely real vs. simulated
+| Service               | URL                          |
+| --------------------- | ---------------------------- |
+| Frontend              | `http://localhost:3000`      |
+| Backend API           | `http://localhost:8000`      |
+| Swagger Documentation | `http://localhost:8000/docs` |
 
-Being upfront about this, per the spec's own instruction to separate
-demo-only simulation from real backend functionality:
+---
 
-- **Real**: auth/roles, database, order/vehicle CRUD, CSV/JSON parsing,
-  OR-Tools VRPTW solving, K-Means clustering, A* pathfinding, XGBoost
-  training/inference, the retraining feedback loop, hardware event logging
-  and single-vehicle rerouting — all backed by actual algorithms and a
-  live database, verified with passing tests and live smoke tests.
-- **Approximated, and documented as such in the code**: road distances are
-  haversine (straight-line) distance × a 1.3x detour factor, since no live
-  routing API (OSRM/Google Directions) is wired up. This is a standard
-  approximation, not literal road distance.
-- **Not yet built**: order-status 15-minute auto-sync job, and a Settings
-  page. The Analysis page's chart/summary data is intentionally simulated
-  (per spec section 22, which explicitly permits this), while the ML
-  Insights panel and Predicted-vs-Actual ETA feed on that same page are
-  real, live backend data — clearly distinguished in the UI itself.
+# Real vs. Simulated Components
 
-## Repository layout
+RouteXAI clearly distinguishes between fully implemented backend functionality, algorithmic approximations, and intentionally simulated analytics.
+
+## Fully Implemented
+
+The following components use actual backend implementations and database interactions:
+
+* JWT authentication
+* Role-based authorization
+* User management
+* Order CRUD
+* Vehicle CRUD
+* CSV/JSON processing
+* OR-Tools VRPTW optimization
+* K-Means clustering
+* A* pathfinding
+* XGBoost model training and inference
+* ML feedback and retraining
+* Hardware event logging
+* Hardware-triggered single-vehicle rerouting
+* ML Insights
+* Predicted-vs-actual ETA data
+* Report export
+
+## Routing Approximation
+
+The current routing implementation calculates estimated road distance using:
+
+```text
+Haversine Distance × 1.3 Detour Factor
+```
+
+This is a documented approximation because a live road-routing service such as OSRM or Google Directions is not currently integrated.
+
+Therefore, the current implementation should not be interpreted as providing literal road-network distances or live traffic-aware routing.
+
+## Analytics Data
+
+The Analysis page's general chart and summary datasets are intentionally simulated according to the project specification.
+
+The following components use real backend data:
+
+* ML Insights
+* Predicted-vs-Actual ETA
+* ML prediction results
+* Feedback/retraining data
+
+The UI clearly distinguishes these data sources.
+
+---
+
+# Current Development Status
+
+The core RouteXAI platform is functionally implemented and verified through backend testing and live application smoke testing.
+
+The remaining enhancements are primarily focused on production readiness:
+
+* [ ] Implement the 15-minute order-status automatic synchronization job
+* [ ] Add the Settings page
+* [ ] Complete end-to-end Docker Compose verification
+* [ ] Integrate a live road-routing API
+* [ ] Integrate real-time traffic data for advanced dynamic routing
+
+---
+
+# Repository Structure
 
 ```text
 RouteXAI/
-├── backend/          # FastAPI + SQLAlchemy + OR-Tools + XGBoost
-├── frontend/          # React + Vite + TypeScript + Tailwind + Leaflet
-└── docker-compose.yml  # Postgres + backend + frontend
+│
+├── backend/
+│   ├── app/
+│   ├── models/
+│   ├── routes/
+│   ├── services/
+│   ├── ml/
+│   ├── seed/
+│   ├── tests/
+│   ├── requirements.txt
+│   ├── .env.example
+│   └── README.md
+│
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   ├── package.json
+│   ├── vite.config.ts
+│   ├── .env.example
+│   └── README.md
+│
+├── docker-compose.yml
+└── README.md
 ```
+
+---
+
+# Core Intelligence Pipeline
+
+```text
+Delivery Orders
+       │
+       ▼
+K-Means Clustering
+       │
+       ▼
+OR-Tools VRPTW
+       │
+       ▼
+Optimized Delivery Routes
+       │
+       ▼
+XGBoost ETA Prediction
+       │
+       ▼
+Real-Time Monitoring
+       │
+       ├── Normal ───────────────► Continue Route
+       │
+       └── Block Detected ───────► A* Rerouting
+                                      │
+                                      ▼
+                              Updated Route
+                                      │
+                                      ▼
+                             Delivery Feedback
+                                      │
+                                      ▼
+                              ML Retraining
+```
+
+---
+
+## Project Status
+
+**RouteXAI is a functional AI-powered logistics intelligence platform combining route optimization, machine learning, geospatial pathfinding, fleet management, analytics, and dynamic rerouting in a unified full-stack application.**
